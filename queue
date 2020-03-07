@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+import os
 
 def main():
     """ ------------------- argparse -------------------- """
@@ -22,8 +23,10 @@ def main():
         print("UNKNOWN COMMAND")
         return
 
+    path = os.path.join(os.path.dirname(__file__), "q.txt")
+
     q = []
-    with open("q.txt", "r") as f:
+    with open(path, "r") as f:
         for line in f:
             q.append(line)
 
@@ -42,7 +45,7 @@ def main():
             print("{} is already in the queue".format(name.strip()))
         else:
             q.append(name)
-            with open("q.txt", "a") as f:
+            with open(path, "a") as f:
                 f.write(name)
             sys.stdout.write("".join(q))
 
@@ -51,7 +54,7 @@ def main():
             print("{} is not in the queue".format(name.strip()))
         else:
             q.remove(name)
-            with open("q.txt", "w") as f:
+            with open(path, "w") as f:
                 f.write("".join(q))
             sys.stdout.write("".join(q))
 
