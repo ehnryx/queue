@@ -10,7 +10,8 @@ def main():
     parser.add_argument("command", help=
             "add -- add a problem to the queue\n" +
             "list -- list all problems in the queue\n" +
-            "drop -- drop a problem from the queue\n"
+            "drop -- drop a problem from the queue\n" +
+            "done -- mark as completed and drop\n"
     )
     parser.add_argument("option",
             nargs="*", default=None,
@@ -19,7 +20,7 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command not in ["add", "list", "drop"]:
+    if args.command not in ["add", "list", "drop", "done"]:
         print("UNKNOWN COMMAND")
         return
 
@@ -30,6 +31,7 @@ def main():
         for line in f:
             q.append(line)
 
+
     if args.command == "list":
         sys.stdout.write("".join(q))
         return
@@ -38,25 +40,30 @@ def main():
         print("specify problem to add/drop")
         return
 
-    name = args.option[0] + "\n"
-
     if args.command == "add":
-        if name in q:
-            print("{} is already in the queue".format(name.strip()))
-        else:
-            q.append(name)
-            with open(path, "a") as f:
-                f.write(name)
-            sys.stdout.write("".join(q))
+        for it in args.option:
+            name = it + "\n"
+            if name in q[1:]:
+                print("{} is already in the queue".format(name.strip()))
+            else:
+                q.append(name)
+                with open(path, "a") as f:
+                    f.write(name)
+        sys.stdout.write("".join(q))
 
     else:
-        if name not in q:
-            print("{} is not in the queue".format(name.strip()))
-        else:
-            q.remove(name)
-            with open(path, "w") as f:
-                f.write("".join(q))
-            sys.stdout.write("".join(q))
+        for it in args.option:
+            name = it + "\n"
+            if name not in q[1:]:
+                print("{} is not in the queue".format(name.strip()))
+            else:
+                q.remove(name)
+                if args.command == "done":
+                    num = int(q[0].split()[1])
+                    q[0] = "Completed: {}\n".format(num+1)
+                with open(path, "w") as f:
+                    f.write("".join(q))
+        sys.stdout.write("".join(q))
 
 if __name__ == "__main__":
     try:
